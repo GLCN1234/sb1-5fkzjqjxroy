@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
-import { Users, Star, Instagram, Camera, Heart, MapPin, Calendar } from 'lucide-react';
+import { Users, Star, Instagram, Camera, Heart, MapPin, Calendar, X } from 'lucide-react';
 
 const Models: React.FC = () => {
   const [heroRef, heroInView] = useInView({ triggerOnce: true, threshold: 0.1 });
   const [selectedModel, setSelectedModel] = useState<any>(null);
+  const navigate = useNavigate();
 
   const models = [
     {
@@ -100,6 +102,20 @@ const Models: React.FC = () => {
     },
   ];
 
+  const scrollToModelsGrid = () => {
+    document.getElementById('models-grid')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleBookModel = (modelName?: string) => {
+    // Navigate to /join with model tab preselected
+    navigate('/join', { state: { tab: 'brand', reason: modelName ? `Booking inquiry for ${modelName}` : undefined } });
+  };
+
+  const handleViewAllPortfolios = () => {
+    setSelectedModel(null);
+    scrollToModelsGrid();
+  };
+
   return (
     <div className="pt-20">
       {/* Hero Section */}
@@ -130,28 +146,23 @@ const Models: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16"
           >
-            <div className="text-center">
-              <h3 className="text-4xl font-bold gradient-text mb-2">50+</h3>
-              <p className="text-gray-600">Professional Models</p>
-            </div>
-            <div className="text-center">
-              <h3 className="text-4xl font-bold gradient-text mb-2">1M+</h3>
-              <p className="text-gray-600">Combined Followers</p>
-            </div>
-            <div className="text-center">
-              <h3 className="text-4xl font-bold gradient-text mb-2">500+</h3>
-              <p className="text-gray-600">Successful Shoots</p>
-            </div>
-            <div className="text-center">
-              <h3 className="text-4xl font-bold gradient-text mb-2">98%</h3>
-              <p className="text-gray-600">Client Satisfaction</p>
-            </div>
+            {[
+              { value: '50+', label: 'Professional Models' },
+              { value: '1M+', label: 'Combined Followers' },
+              { value: '500+', label: 'Successful Shoots' },
+              { value: '98%', label: 'Client Satisfaction' },
+            ].map((stat) => (
+              <div key={stat.label} className="text-center">
+                <h3 className="text-4xl font-bold gradient-text mb-2">{stat.value}</h3>
+                <p className="text-gray-600">{stat.label}</p>
+              </div>
+            ))}
           </motion.div>
         </div>
       </section>
 
       {/* Models Grid */}
-      <section className="py-20 bg-white">
+      <section id="models-grid" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {models.map((model, index) => (
@@ -176,11 +187,11 @@ const Models: React.FC = () => {
                       <p className="text-sm font-medium">Click to view portfolio</p>
                     </div>
                   </div>
-                  
+
                   <div className="p-6">
                     <h3 className="text-xl font-semibold mb-2 text-gray-900">{model.name}</h3>
                     <p className="text-gray-600 mb-3">{model.specialty}</p>
-                    
+
                     <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                       <div className="flex items-center space-x-1">
                         <MapPin className="w-4 h-4" />
@@ -211,87 +222,102 @@ const Models: React.FC = () => {
       </section>
 
       {/* Model Details Modal */}
-      {selectedModel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-luxury"
+      <AnimatePresence>
+        {selectedModel && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setSelectedModel(null)}
           >
-            <div className="relative">
-              <button
-                onClick={() => setSelectedModel(null)}
-                className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors duration-300"
-              >
-                ×
-              </button>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-2">
-                <div className="p-8">
-                  <img
-                    src={selectedModel.image}
-                    alt={selectedModel.name}
-                    className="w-full h-96 object-cover rounded-2xl mb-6"
-                  />
-                  
-                  <h2 className="text-3xl font-bold mb-2 text-gray-900">{selectedModel.name}</h2>
-                  <p className="text-xl text-gray-600 mb-4">{selectedModel.specialty}</p>
-                  
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="text-center">
-                      <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-2">
-                        <Camera className="w-6 h-6 text-white" />
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-luxury"
+            >
+              <div className="relative">
+                <button
+                  onClick={() => setSelectedModel(null)}
+                  className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors duration-300 shadow-md"
+                >
+                  <X className="w-5 h-5 text-gray-700" />
+                </button>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2">
+                  <div className="p-8">
+                    <img
+                      src={selectedModel.image}
+                      alt={selectedModel.name}
+                      className="w-full h-96 object-cover rounded-2xl mb-6"
+                    />
+
+                    <h2 className="text-3xl font-bold mb-2 text-gray-900">{selectedModel.name}</h2>
+                    <p className="text-xl text-gray-600 mb-4">{selectedModel.specialty}</p>
+
+                    <div className="grid grid-cols-3 gap-4 mb-6">
+                      <div className="text-center">
+                        <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <Camera className="w-6 h-6 text-white" />
+                        </div>
+                        <p className="text-2xl font-bold gradient-text">{selectedModel.stats.campaigns}</p>
+                        <p className="text-sm text-gray-600">Campaigns</p>
                       </div>
-                      <p className="text-2xl font-bold gradient-text">{selectedModel.stats.campaigns}</p>
-                      <p className="text-sm text-gray-600">Campaigns</p>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-2">
-                        <Heart className="w-6 h-6 text-white" />
+                      <div className="text-center">
+                        <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <Heart className="w-6 h-6 text-white" />
+                        </div>
+                        <p className="text-2xl font-bold gradient-text">{selectedModel.stats.followers}</p>
+                        <p className="text-sm text-gray-600">Followers</p>
                       </div>
-                      <p className="text-2xl font-bold gradient-text">{selectedModel.stats.followers}</p>
-                      <p className="text-sm text-gray-600">Followers</p>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-2">
-                        <Star className="w-6 h-6 text-white" />
+                      <div className="text-center">
+                        <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <Star className="w-6 h-6 text-white" />
+                        </div>
+                        <p className="text-2xl font-bold gradient-text">{selectedModel.stats.rating}</p>
+                        <p className="text-sm text-gray-600">Rating</p>
                       </div>
-                      <p className="text-2xl font-bold gradient-text">{selectedModel.stats.rating}</p>
-                      <p className="text-sm text-gray-600">Rating</p>
                     </div>
+
+                    <p className="text-gray-700 leading-relaxed">{selectedModel.bio}</p>
                   </div>
-                  
-                  <p className="text-gray-700 leading-relaxed">{selectedModel.bio}</p>
-                </div>
-                
-                <div className="p-8 bg-gray-50">
-                  <h3 className="text-2xl font-semibold mb-6 text-gray-900">Portfolio</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {selectedModel.portfolio.map((image: string, index: number) => (
-                      <img
-                        key={index}
-                        src={image}
-                        alt={`${selectedModel.name} portfolio ${index + 1}`}
-                        className="w-full h-40 object-cover rounded-lg hover:scale-105 transition-transform duration-300"
-                      />
-                    ))}
-                  </div>
-                  
-                  <div className="mt-8 space-y-4">
-                    <button className="w-full py-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300">
-                      Book {selectedModel.name}
-                    </button>
-                    <button className="w-full py-3 border-2 border-gray-300 text-gray-700 rounded-full font-semibold hover:border-gray-400 transition-colors duration-300">
-                      View Full Portfolio
-                    </button>
+
+                  <div className="p-8 bg-gray-50">
+                    <h3 className="text-2xl font-semibold mb-6 text-gray-900">Portfolio</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      {selectedModel.portfolio.map((image: string, index: number) => (
+                        <img
+                          key={index}
+                          src={image}
+                          alt={`${selectedModel.name} portfolio ${index + 1}`}
+                          className="w-full h-40 object-cover rounded-lg hover:scale-105 transition-transform duration-300"
+                        />
+                      ))}
+                    </div>
+
+                    <div className="mt-8 space-y-4">
+                      {/* ✅ WORKING: Book button navigates to /join */}
+                      <button
+                        onClick={() => handleBookModel(selectedModel.name)}
+                        className="w-full py-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                      >
+                        Book {selectedModel.name}
+                      </button>
+                      {/* ✅ WORKING: Scrolls back to model grid */}
+                      <button
+                        onClick={handleViewAllPortfolios}
+                        className="w-full py-3 border-2 border-gray-300 text-gray-700 rounded-full font-semibold hover:border-gray-400 transition-colors duration-300"
+                      >
+                        View All Portfolios
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
@@ -309,10 +335,18 @@ const Models: React.FC = () => {
               Book our talented models for your next campaign, photoshoot, or event. Professional, reliable, and results-driven.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-4 bg-white text-gray-900 rounded-full font-semibold text-lg shadow-luxury hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+              {/* ✅ WORKING: Navigates to /join (brand tab to book a model) */}
+              <button
+                onClick={() => handleBookModel()}
+                className="px-8 py-4 bg-white text-gray-900 rounded-full font-semibold text-lg shadow-luxury hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              >
                 Book a Model
               </button>
-              <button className="px-8 py-4 border-2 border-white text-white rounded-full font-semibold text-lg hover:bg-white hover:text-gray-900 transition-all duration-300">
+              {/* ✅ WORKING: Scrolls up to the models grid */}
+              <button
+                onClick={scrollToModelsGrid}
+                className="px-8 py-4 border-2 border-white text-white rounded-full font-semibold text-lg hover:bg-white hover:text-gray-900 transition-all duration-300"
+              >
                 View All Portfolios
               </button>
             </div>
