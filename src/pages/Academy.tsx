@@ -18,7 +18,7 @@ const Academy: React.FC = () => {
     {
       title: 'Beginner Program',
       duration: '8 weeks',
-      price: '$1,299',
+      price: '₦120,000',
       description: 'Perfect for those starting their modeling journey',
       features: ['Basic posing techniques', 'Portfolio building', 'Industry fundamentals', 'Confidence training'],
       color: 'from-green-400 to-blue-500',
@@ -26,7 +26,7 @@ const Academy: React.FC = () => {
     {
       title: 'Advanced Program',
       duration: '12 weeks', 
-      price: '$2,499',
+      price: '₦250,000',
       description: 'For models ready to take their career to the next level',
       features: ['Advanced runway skills', 'Professional networking', 'Brand partnerships', 'Business development'],
       color: 'from-purple-400 to-pink-500',
@@ -34,7 +34,7 @@ const Academy: React.FC = () => {
     {
       title: 'Elite Program',
       duration: '16 weeks',
-      price: '$3,999',
+      price: '₦500,000',
       description: 'Comprehensive training for industry leaders',
       features: ['One-on-one mentoring', 'International opportunities', 'Media training', 'Career management'],
       color: 'from-yellow-400 to-orange-500',

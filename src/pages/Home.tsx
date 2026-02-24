@@ -76,7 +76,7 @@ const Home: React.FC = () => {
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gray-900 text-shadow">
               Welcome to
               <br />
-              <span className="gradient-text">ROYALE.CO</span>
+              <span className="gradient-text">ROYALE DOXA</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
               Where influence meets elegance. We craft the next generation of models, influencers, and brand ambassadors who define industry standards.
