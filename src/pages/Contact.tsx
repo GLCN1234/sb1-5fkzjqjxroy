@@ -371,7 +371,7 @@ const Contact: React.FC = () => {
           >
             {[
               {
-                question: "How do I apply to become a ROYALE.CO model?",
+                question: "How do I apply to become a ROYALE DOXA model?",
                 answer: "You can apply through our Join page by filling out the comprehensive application form. We review all applications within 5-7 business days and contact selected candidates for the next steps."
               },
               {
@@ -379,7 +379,7 @@ const Contact: React.FC = () => {
                 answer: "We offer comprehensive influencer marketing services including campaign strategy, model partnerships, content creation, and performance analytics. Our services are customized based on your brand's specific needs and goals."
               },
               {
-                question: "How much does it cost to work with ROYALE.CO?",
+                question: "How much does it cost to work with ROYALE DOXA?",
                 answer: "Our pricing varies based on the scope and complexity of your project. We offer flexible packages starting from $5,000 for smaller campaigns up to comprehensive packages for major brand partnerships. Contact us for a custom quote."
               },
               {

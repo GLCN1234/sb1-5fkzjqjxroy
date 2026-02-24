@@ -58,7 +58,7 @@ const Academy: React.FC = () => {
     {
       name: 'Emma Rodriguez',
       role: 'Fashion Model',
-      content: 'ROYALE.CO Academy transformed my career. The training was comprehensive and the mentors were incredible.',
+      content: 'ROYALE DOXA Academy transformed my career. The training was comprehensive and the mentors were incredible.',
       image: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=300',
     },
     {

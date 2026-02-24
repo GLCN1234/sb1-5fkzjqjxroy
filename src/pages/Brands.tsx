@@ -313,7 +313,7 @@ const Brands: React.FC = () => {
               Ready to Join Our Success Stories?
             </h2>
             <p className="text-xl mb-8 opacity-90">
-              Let's create your next breakthrough campaign. Partner with ROYALE.CO and experience the difference that strategic influencer marketing can make.
+              Let's create your next breakthrough campaign. Partner with ROYALE DOXA and experience the difference that strategic influencer marketing can make.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="px-8 py-4 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white rounded-full font-semibold text-lg shadow-luxury hover:shadow-xl transform hover:scale-105 transition-all duration-300">

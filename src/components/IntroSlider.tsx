@@ -9,7 +9,7 @@ interface IntroSliderProps {
 const slides = [
   {
     id: 1,
-    title: "Welcome to ROYALE.CO",
+    title: "Welcome to ROYALE DOXA",
     subtitle: "Where Influence Meets Elegance",
     icon: Crown,
     gradient: "from-yellow-400 to-yellow-600",

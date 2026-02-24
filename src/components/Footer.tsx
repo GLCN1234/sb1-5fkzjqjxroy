@@ -77,7 +77,7 @@ const Footer: React.FC = () => {
 
         <div className="border-t border-gray-800 mt-12 pt-8 text-center">
           <p className="text-gray-400">
-            © 2025 ROYALE.CO. All rights reserved. Crafting excellence in modeling and brand influence.
+            © 2025 ROYALE DOXA. All rights reserved. Crafting excellence in modeling and brand influence.
           </p>
         </div>
       </div>

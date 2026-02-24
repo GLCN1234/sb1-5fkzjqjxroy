@@ -37,7 +37,7 @@ const Join: React.FC = () => {
     { step: '01', title: 'Application', description: 'Submit your application with all required information and materials.' },
     { step: '02', title: 'Review', description: 'Our team reviews your application and conducts initial screening.' },
     { step: '03', title: 'Interview', description: 'Selected candidates participate in a virtual or in-person interview.' },
-    { step: '04', title: 'Onboarding', description: 'Welcome to ROYALE.CO! Begin your journey with our comprehensive onboarding.' },
+    { step: '04', title: 'Onboarding', description: 'Welcome to ROYALE DOXA! Begin your journey with our comprehensive onboarding.' },
   ];
 
   const interests = ['Fashion', 'Beauty', 'Lifestyle', 'Fitness', 'Travel', 'Food', 'Technology', 'Automotive', 'Sports', 'Entertainment', 'Wellness', 'Art'];
@@ -118,7 +118,7 @@ const Join: React.FC = () => {
               <Heart className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gray-900">
-              Join <span className="gradient-text">ROYALE.CO</span>
+              Join <span className="gradient-text">ROYALE DOXA</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
               Ready to elevate your career or brand? Join our exclusive community of models, influencers, and brand partners who are defining the future of digital marketing.
@@ -187,7 +187,7 @@ const Join: React.FC = () => {
                   <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-blue-500 rounded-lg flex items-center justify-center">
                     <Crown className="w-5 h-5 text-white" />
                   </div>
-                  <span className="text-xl font-bold gradient-text">ROYALE.CO</span>
+                  <span className="text-xl font-bold gradient-text">ROYALE DOXA</span>
                 </Link>
                 <div className="h-6 w-px bg-gray-300" />
                 <h1 className="text-2xl font-bold text-gray-900">Create Campaign</h1>
@@ -205,7 +205,7 @@ const Join: React.FC = () => {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div initial={{ y: 30, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ duration: 0.8 }} viewport={{ once: true }} className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">Why Choose <span className="gradient-text">ROYALE.CO</span>?</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">Why Choose <span className="gradient-text">ROYALE DOXA</span>?</h2>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {benefits.map((benefit, index) => (
@@ -268,7 +268,7 @@ const Join: React.FC = () => {
         <div className="max-w-4xl mx-auto px-6">
           <motion.div initial={{ y: 30, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ duration: 0.8 }} viewport={{ once: true }} className="text-center mb-12 text-white">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Get Started?</h2>
-            <p className="text-xl opacity-90">Complete your application below and take the first step towards joining the ROYALE.CO family.</p>
+            <p className="text-xl opacity-90">Complete your application below and take the first step towards joining the ROYALE DOXA family.</p>
           </motion.div>
 
           <motion.div initial={{ y: 50, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ duration: 0.8, delay: 0.3 }} viewport={{ once: true }} className="bg-white rounded-2xl p-8 shadow-luxury">
