@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { GraduationCap, Users, Calendar, Award, CheckCircle, Star, Clock, MapPin } from 'lucide-react';
+import { GraduationCap, Users, Award, CheckCircle, Star, Clock, MapPin } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const Academy: React.FC = () => {
   const [heroRef, heroInView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -25,7 +31,7 @@ const Academy: React.FC = () => {
     },
     {
       title: 'Advanced Program',
-      duration: '12 weeks', 
+      duration: '12 weeks',
       price: '₦250,000',
       description: 'For models ready to take their career to the next level',
       features: ['Advanced runway skills', 'Professional networking', 'Brand partnerships', 'Business development'],
@@ -64,22 +70,53 @@ const Academy: React.FC = () => {
     {
       name: 'Sofia Chen',
       role: 'Runway Model',
-      content: 'From beginner to booking major shows in 6 months. The academy\'s network opened doors I never imagined.',
+      content: "From beginner to booking major shows in 6 months. The academy's network opened doors I never imagined.",
       image: 'https://images.pexels.com/photos/3184341/pexels-photo-3184341.jpeg?auto=compress&cs=tinysrgb&w=300',
     },
   ];
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  // ✅ Clicking "Enroll Now" scrolls to form and pre-selects the program
+  const handleEnrollClick = (programTitle: string) => {
+    setSelectedProgram(programTitle);
+    const formSection = document.getElementById('application-form');
+    if (formSection) {
+      formSection.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // ✅ Submits to Supabase academy_enrollments table
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Application submitted:', formData);
-    // Handle form submission
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const { error } = await supabase.from('academy_enrollments').insert([
+        {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          age: formData.age,
+          experience: formData.experience,
+          goals: formData.goals,
+          program: selectedProgram || 'Not specified',
+        },
+      ]);
+
+      if (error) throw error;
+
+      setSubmitSuccess(true);
+      setFormData({ name: '', email: '', phone: '', age: '', experience: '', goals: '' });
+      setSelectedProgram(null);
+    } catch (err: any) {
+      setSubmitError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -112,34 +149,20 @@ const Academy: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16"
           >
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Users className="w-8 h-8 text-white" />
+            {[
+              { icon: Users, label: 'Graduates', value: '500+', color: 'from-yellow-400 to-orange-500' },
+              { icon: Award, label: 'Success Rate', value: '95%', color: 'from-green-400 to-blue-500' },
+              { icon: Clock, label: 'Week Programs', value: '8-16', color: 'from-blue-400 to-cyan-500' },
+              { icon: MapPin, label: 'Locations', value: '5', color: 'from-pink-400 to-red-500' },
+            ].map(({ icon: Icon, label, value, color }, i) => (
+              <div key={i} className="text-center">
+                <div className={`w-16 h-16 bg-gradient-to-r ${color} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
+                  <Icon className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-3xl font-bold gradient-text">{value}</h3>
+                <p className="text-gray-600">{label}</p>
               </div>
-              <h3 className="text-3xl font-bold gradient-text">500+</h3>
-              <p className="text-gray-600">Graduates</p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Award className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-3xl font-bold gradient-text">95%</h3>
-              <p className="text-gray-600">Success Rate</p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Clock className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-3xl font-bold gradient-text">8-16</h3>
-              <p className="text-gray-600">Week Programs</p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-pink-400 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <MapPin className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-3xl font-bold gradient-text">5</h3>
-              <p className="text-gray-600">Locations</p>
-            </div>
+            ))}
           </motion.div>
         </div>
       </section>
@@ -172,17 +195,17 @@ const Academy: React.FC = () => {
                 viewport={{ once: true }}
                 className="group"
               >
-                <div className="bg-white rounded-2xl p-8 shadow-luxury hover-lift border border-gray-100 h-full text-center">
+                <div className="bg-white rounded-2xl p-8 shadow-luxury hover-lift border border-gray-100 h-full text-center flex flex-col">
                   <div className={`w-16 h-16 bg-gradient-to-r ${program.color} rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
                     <Star className="w-8 h-8 text-white" />
                   </div>
-                  
+
                   <h3 className="text-2xl font-semibold mb-2 text-gray-900">{program.title}</h3>
                   <p className="text-3xl font-bold gradient-text mb-4">{program.price}</p>
                   <p className="text-gray-600 mb-6">{program.description}</p>
                   <p className="text-sm text-gray-500 mb-6">Duration: {program.duration}</p>
-                  
-                  <ul className="space-y-3 mb-8 text-left">
+
+                  <ul className="space-y-3 mb-8 text-left flex-1">
                     {program.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-center space-x-2">
                         <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
@@ -190,8 +213,12 @@ const Academy: React.FC = () => {
                       </li>
                     ))}
                   </ul>
-                  
-                  <button className={`w-full py-3 bg-gradient-to-r ${program.color} text-white rounded-full font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300`}>
+
+                  {/* ✅ Fixed: onClick now scrolls to form and selects program */}
+                  <button
+                    onClick={() => handleEnrollClick(program.title)}
+                    className={`w-full py-3 bg-gradient-to-r ${program.color} text-white rounded-full font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300 cursor-pointer`}
+                  >
                     Enroll Now
                   </button>
                 </div>
@@ -262,9 +289,6 @@ const Academy: React.FC = () => {
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
               Success <span className="gradient-text">Stories</span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Hear from our graduates who have transformed their lives and launched successful modeling careers.
-            </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -277,15 +301,9 @@ const Academy: React.FC = () => {
                 viewport={{ once: true }}
                 className="bg-white rounded-2xl p-8 shadow-luxury hover-lift text-center"
               >
-                <img
-                  src={testimonial.image}
-                  alt={testimonial.name}
-                  className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
-                />
+                <img src={testimonial.image} alt={testimonial.name} className="w-20 h-20 rounded-full mx-auto mb-4 object-cover" />
                 <div className="flex justify-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                  ))}
+                  {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />)}
                 </div>
                 <p className="text-gray-600 mb-6 italic">"{testimonial.content}"</p>
                 <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
@@ -297,7 +315,7 @@ const Academy: React.FC = () => {
       </section>
 
       {/* Application Form Section */}
-      <section className="py-20 bg-gradient-to-r from-purple-600 to-pink-600">
+      <section id="application-form" className="py-20 bg-gradient-to-r from-purple-600 to-pink-600">
         <div className="max-w-4xl mx-auto px-6">
           <motion.div
             initial={{ y: 30, opacity: 0 }}
@@ -306,12 +324,13 @@ const Academy: React.FC = () => {
             viewport={{ once: true }}
             className="text-center mb-12 text-white"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to Begin Your Journey?
-            </h2>
-            <p className="text-xl opacity-90">
-              Take the first step towards your modeling career. Apply now and join our next cohort.
-            </p>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Begin Your Journey?</h2>
+            <p className="text-xl opacity-90">Take the first step towards your modeling career. Apply now and join our next cohort.</p>
+            {selectedProgram && (
+              <div className="mt-4 inline-block bg-white/20 rounded-full px-6 py-2 text-white font-semibold">
+                Selected: {selectedProgram}
+              </div>
+            )}
           </motion.div>
 
           <motion.div
@@ -321,101 +340,100 @@ const Academy: React.FC = () => {
             viewport={{ once: true }}
             className="bg-white rounded-2xl p-8 shadow-luxury"
           >
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-gray-700 font-medium mb-2">Full Name *</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                    placeholder="Your full name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 font-medium mb-2">Email Address *</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                    placeholder="your@email.com"
-                  />
-                </div>
+            {submitSuccess ? (
+              <div className="text-center py-12">
+                <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Application Submitted!</h3>
+                <p className="text-gray-600 mb-6">We'll review your application and reach out within 2-3 business days.</p>
+                <button
+                  onClick={() => setSubmitSuccess(false)}
+                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold"
+                >
+                  Submit Another Application
+                </button>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Program selector inside form */}
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Phone Number *</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                    placeholder="(555) 123-4567"
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 font-medium mb-2">Age *</label>
+                  <label className="block text-gray-700 font-medium mb-2">Program *</label>
                   <select
-                    name="age"
-                    value={formData.age}
-                    onChange={handleInputChange}
+                    value={selectedProgram || ''}
+                    onChange={(e) => setSelectedProgram(e.target.value)}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
                   >
-                    <option value="">Select age range</option>
-                    <option value="16-20">16-20</option>
-                    <option value="21-25">21-25</option>
-                    <option value="26-30">26-30</option>
-                    <option value="31+">31+</option>
+                    <option value="">Select a program</option>
+                    {programs.map((p) => (
+                      <option key={p.title} value={p.title}>{p.title} — {p.price} ({p.duration})</option>
+                    ))}
                   </select>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Previous Experience</label>
-                <select
-                  name="experience"
-                  value={formData.experience}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                >
-                  <option value="">Select experience level</option>
-                  <option value="none">No experience</option>
-                  <option value="beginner">Beginner (0-1 years)</option>
-                  <option value="intermediate">Intermediate (1-3 years)</option>
-                  <option value="advanced">Advanced (3+ years)</option>
-                </select>
-              </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-gray-700 font-medium mb-2">Full Name *</label>
+                    <input type="text" name="name" value={formData.name} onChange={handleInputChange} required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                      placeholder="Your full name" />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 font-medium mb-2">Email Address *</label>
+                    <input type="email" name="email" value={formData.email} onChange={handleInputChange} required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                      placeholder="your@email.com" />
+                  </div>
+                </div>
 
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">Career Goals *</label>
-                <textarea
-                  name="goals"
-                  value={formData.goals}
-                  onChange={handleInputChange}
-                  required
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 resize-none"
-                  placeholder="Tell us about your modeling aspirations and what you hope to achieve..."
-                />
-              </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-gray-700 font-medium mb-2">Phone Number *</label>
+                    <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                      placeholder="+234 000 000 0000" />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 font-medium mb-2">Age *</label>
+                    <select name="age" value={formData.age} onChange={handleInputChange} required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300">
+                      <option value="">Select age range</option>
+                      <option value="16-20">16-20</option>
+                      <option value="21-25">21-25</option>
+                      <option value="26-30">26-30</option>
+                      <option value="31+">31+</option>
+                    </select>
+                  </div>
+                </div>
 
-              <button
-                type="submit"
-                className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold text-lg shadow-luxury hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-              >
-                Submit Application
-              </button>
-            </form>
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2">Previous Experience</label>
+                  <select name="experience" value={formData.experience} onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300">
+                    <option value="">Select experience level</option>
+                    <option value="none">No experience</option>
+                    <option value="beginner">Beginner (0-1 years)</option>
+                    <option value="intermediate">Intermediate (1-3 years)</option>
+                    <option value="advanced">Advanced (3+ years)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2">Career Goals *</label>
+                  <textarea name="goals" value={formData.goals} onChange={handleInputChange} required rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 resize-none"
+                    placeholder="Tell us about your modeling aspirations..." />
+                </div>
+
+                {submitError && (
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">{submitError}</div>
+                )}
+
+                <button type="submit" disabled={submitting}
+                  className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold text-lg shadow-luxury hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none">
+                  {submitting ? 'Submitting...' : 'Submit Application'}
+                </button>
+              </form>
+            )}
           </motion.div>
         </div>
       </section>
